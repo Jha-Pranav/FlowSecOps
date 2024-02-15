@@ -1,4 +1,4 @@
-Certainly! Here's the updated README content with emojis:
+
 
 ```markdown
 # 🚀 Local Kubernetes Setup
