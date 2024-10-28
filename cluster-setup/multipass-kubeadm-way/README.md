@@ -1,4 +1,3 @@
-Here's a formatted version of your GitHub README file with added emojis for a more engaging look:
 
 ```markdown
 # 🌐 Kubernetes Setup Using Multipass
@@ -229,21 +228,42 @@ multipass set local.workerb.disk=30G
 
 You may also be interested in installing Docker inside the control-plane node. 🐳
 
-Now how do we add new node to the cluster ?
- 
+## ➕ Adding a New Node to the Cluster
 
+To add a new worker node to your cluster:
+
+### 1. Launch the New Node
+
+```bash
 multipass launch oracular --name workerc --cpus 4 -m 50G
+```
 
+### 2. Login to the New Node
+
+```bash
 multipass shell workerc
+```
 
-Install Necessary Packages
+### 3. Install Necessary Packages
 
-Join the New Node to the Cluster
+Follow the `install_package.sh` script to install required packages.
+
+### 4. Join the New Node to the Cluster
+
+#### A. Get the Join Command
+
+Login back to the control-plane instance:
+
+```bash
 multipass shell control-plane
+```
 
+Run the following command to create a join command:
+
+```bash
 kubeadm token create --print-join-command
+```
 
-install required packages follow install_package.sh script
-Join the new node to the cluster
+#### B. Join the New Node
 
-
+Run the join command output from the previous step on the new worker node.
