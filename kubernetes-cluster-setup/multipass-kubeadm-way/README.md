@@ -1,6 +1,8 @@
 
+---
+
 ```markdown
-# 🌐 Kubernetes Setup Using Multipass
+# 🌐 Kubernetes Setup Using Multipass and kubeadm
 
 ## 🛠️ Prerequisites
 
@@ -20,7 +22,7 @@ multipass launch oracular --name workera --cpus 2 -m 15G
 multipass launch oracular --name workerb --cpus 2 -m 15G
 ```
 
-> **Note:** [Oracular](https://wiki.ubuntu.com/Releases) refers to the specific version being used.
+> **Note:** [Oracular](https://wiki.ubuntu.com/Releases) refers to the specific Ubuntu release version being used.
 
 ## 🔍 View Launched Instances
 
@@ -50,13 +52,19 @@ net.bridge.bridge-nf-call-ip6tables = 1
 EOF
 ```
 
-### 3. Apply Sysctl Params Without Reboot
+### 3. Remove Swap Memory
+
+```bash
+swapoff -a
+```
+
+### 4. Apply Sysctl Params Without Reboot
 
 ```bash
 sudo sysctl --system
 ```
 
-### 4. Install Containerd
+### 5. Install Containerd
 
 Update the package list and install Containerd:
 
@@ -64,7 +72,7 @@ Update the package list and install Containerd:
 sudo apt-get update && sudo apt-get install -y containerd
 ```
 
-### 5. Configure Containerd
+### 6. Configure Containerd
 
 Create the configuration directory and file:
 
@@ -73,13 +81,13 @@ sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
 ```
 
-### 6. Restart Containerd
+### 7. Restart Containerd
 
 ```bash
 sudo systemctl restart containerd
 ```
 
-### 7. Install Kubelet, Kubectl, and Kubeadm
+### 8. Install Kubelet, Kubectl, and Kubeadm
 
 ```bash
 sudo apt-get update
@@ -267,3 +275,4 @@ kubeadm token create --print-join-command
 #### B. Join the New Node
 
 Run the join command output from the previous step on the new worker node.
+```
