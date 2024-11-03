@@ -1,0 +1,44 @@
+#cloud-config
+
+packages:
+  - ca-certificates
+  - curl
+  - openssl
+
+runcmd:
+  # Enable necessary sysctl settings
+  - sudo sysctl net.bridge.bridge-nf-call-iptables=1
+  - sudo sysctl net.ipv4.ip_forward=1
+  - sudo sysctl net.bridge.bridge-nf-call-ip6tables=1
+
+  # Disable swap (required for Kubernetes)
+  - sudo swapoff -a
+
+  # Install Containerd
+  - echo "Installing Containerd..."
+  - sudo apt-get update
+  - sudo apt-get install -y containerd
+
+  # Configure Containerd
+  - echo "Configuring Containerd..."
+  - sudo mkdir -p /etc/containerd
+  - sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+  # Restart Containerd
+  - echo "Restarting Containerd..."
+  - sudo systemctl restart containerd
+
+  # Install Kubernetes components (kubelet and kubectl only)
+  - echo "Installing Kubernetes components (kubelet and kubectl)..."
+  - sudo apt-get update
+  - sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+
+  # Add Kubernetes APT key and source list
+  - echo "Adding Kubernetes APT key and source list..."
+  - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+  # Update package list and install kubelet and kubectl
+  - sudo apt-get update
+  - sudo apt-get install -y kubelet kubectl
+  - sudo apt-mark hold kubelet kubectl

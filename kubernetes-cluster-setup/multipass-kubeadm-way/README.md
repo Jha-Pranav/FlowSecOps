@@ -17,12 +17,12 @@
 To launch the instances, run the following commands:
 
 ```bash
-multipass launch oracular --name control-plane --cpus 2 -m 10G
-multipass launch oracular --name workera --cpus 2 -m 15G
-multipass launch oracular --name workerb --cpus 2 -m 15G
+multipass launch noble --name control-plane --cpus 2 -m 3G
+multipass launch noble --name workera --cpus 2 -m 3G
+multipass launch noble --name workerb --cpus 2 -m 3G
 ```
 
-> **Note:** [Oracular](https://wiki.ubuntu.com/Releases) refers to the specific Ubuntu release version being used.
+> **Note:** [noble](https://wiki.ubuntu.com/Releases) refers to the specific Ubuntu release version being used.
 
 ## 🔍 View Launched Instances
 
@@ -243,7 +243,7 @@ To add a new worker node to your cluster:
 ### 1. Launch the New Node
 
 ```bash
-multipass launch oracular --name workerc --cpus 4 -m 50G
+multipass launch noble --name workerc --cpus 4 -m 5G
 ```
 
 ### 2. Login to the New Node
