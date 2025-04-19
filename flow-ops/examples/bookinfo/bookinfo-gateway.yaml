@@ -11,13 +11,17 @@ spec:
       name: http2
       protocol: HTTP
     hosts:
-    - "*"
-  # - port:
-  #     number: 32672
-  #     name: https
-  #     protocol: HTTPS
-  #   hosts:
-  #   - "*"
+    - "local.lab.bookinfo"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+      - "local.lab.bookinfo"
+      # - "*"   # optional: wildcard match
+    tls:
+      mode: SIMPLE
+      credentialName: bookinfo-credential  # must match the name of the TLS secret
 ---
 apiVersion: networking.istio.io/v1
 kind: VirtualService
@@ -25,7 +29,7 @@ metadata:
   name: bookinfo
 spec:
   hosts:
-  - "*"
+  - "local.lab.bookinfo"
   gateways:
   - bookinfo-gateway
   http:
