@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tcpdump
+spec:
+  hostNetwork: false
+  containers:
+  - name: tcpdump
+    image: nicolaka/netshoot
+    command: ["sleep", "infinity"]
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN"]
+      privileged: true

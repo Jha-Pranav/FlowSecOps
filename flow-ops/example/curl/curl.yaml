@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curl-client
+  namespace: lab  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curl-client
+  template:
+    metadata:
+      labels:
+        app: curl-client
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+        serviceMeshVersion: 18.1.1+10
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: curl
+          image: quay.io/curl/curl-base:latest
+          command: ["/bin/sh", "-c", "apk add --no-cache openssl curl && sleep 3600"] # Keep the pod running
+          volumeMounts:
+            - mountPath: "/etc/istio-certs"
+              name: istio-certs
+              readOnly: true
+      volumes:
+        - name: istio-certs
+          secret:
+            secretName: curl-mtls-certs
+
+
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: lab
+spec:
+  mtls:
+    mode: STRICT  # Ensures mTLS is strictly enforced for all services
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dummy-server
+  namespace: lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dummy-server
+  template:
+    metadata:
+      labels:
+        app: dummy-server
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+        serviceMeshVersion: 18.1.1+10
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: dummy-server
+          image: quay.io/openshift-scale/nginx
+          ports:
+            - containerPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dummy-server
+  namespace: lab
+spec:
+  selector:
+    app: dummy-server
+  ports:
+    - name: http
+      port: 443
+      targetPort: 443
+
