@@ -126,14 +126,61 @@ You might see the following warning:
 ## ✅ Example `curl` Command
 
 ```bash
-curl -v https://local.lab.httpbin:32672/status/418 \
-  --cacert certs/k8s-lab.com.crt \
-  # --cert certs/client-certs.crt --key certs/client-certs.key
+curl -v https://local.lab.httpbin:443/status/418 --cacert certs/k8s-lab.com.crt 
 ```
 
 Use `--cert` and `--key` when mutual TLS is enabled.
 
 ---
 
-Let me know if you want to generate YAML manifests for Gateway or PeerAuthentication too!
 
+## 🔍 Identify Certificates
+
+### ✅ 1. Server Certificate (`local.lab.httpbin`)
+```bash
+openssl x509 -in local.lab.httpbin.crt -noout -subject -issuer
+```
+
+### ✅ 2. Client Certificate (`client-certs.crt`)
+```bash
+openssl x509 -in client-certs.crt -noout -subject -issuer
+```
+
+---
+
+## 🧾 Verify Certificates Are Signed by Your CA
+
+### ✅ 3. Verify Server Certificate
+```bash
+openssl verify -CAfile k8s-lab.com.crt local.lab.httpbin.crt
+```
+
+### ✅ 4. Verify Client Certificate
+```bash
+openssl verify -CAfile k8s-lab.com.crt client-certs.crt
+```
+
+If both return `OK`, they are correctly signed by your custom root CA.
+
+---
+
+## 🔎 Check Server Certificate Over TLS
+
+### ✅ 5. Fetch Server Cert Over TLS (Ingress or App):
+```bash
+openssl s_client -connect local.lab.httpbin:443 -showcerts -CAfile k8s-lab.com.crt
+```
+
+Configure a mutual TLS ingress gateway
+kubectl create -n istio-ingress secret generic httpbin-credential \
+  --from-file=tls.key=local.lab.httpbin.key \
+  --from-file=tls.crt=local.lab.httpbin.crt \
+  --from-file=ca.crt=k8s-lab.com.crt
+
+SIMPLE -> MUTUAL 
+
+curl -v https://local.lab.httpbin:443/status/418 --cacert certs/k8s-lab.com.crt --cert certs/client-certs.crt --key certs/client-certs.key
+
+
+kubectl -n lab create secret generic httpbin-mtls-cacert --from-file=ca.crt=k8s-lab.com.crt
+kubectl -n lab create secret tls httpbin-mtls --cert local.lab.httpbin.crt --key local.lab.httpbin.key

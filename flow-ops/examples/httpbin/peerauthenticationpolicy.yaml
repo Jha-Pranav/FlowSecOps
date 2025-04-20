@@ -6,3 +6,45 @@ metadata:
 spec:
   mtls:
     mode: STRICT
+# ---
+# apiVersion: security.istio.io/v1
+# kind: PeerAuthentication
+# metadata:
+#   name: disable-peer-auth-for-external-mtls-port
+#   namespace: lab
+# spec:
+#   selector:
+#     matchLabels:
+#       app: httpbin
+#   mtls:
+#     mode: STRICT
+#   portLevelMtls:
+#     8080:
+#       mode: DISABLE
+# ---
+# apiVersion: networking.istio.io/v1
+# kind: Sidecar
+# metadata:
+#   name: ingress-sidecar
+#   namespace: lab
+# spec:
+#   workloadSelector:
+#     labels:
+#       app: httpbin
+#       version: v1
+#   ingress:
+#   - port:
+#       number: 8443
+#       protocol: HTTPS
+#       name: external
+#     defaultEndpoint: 0.0.0.0:8080
+#     tls:
+#       mode: MUTUAL
+#       privateKey: "/etc/istio/tls-certs/tls.key"
+#       serverCertificate: "/etc/istio/tls-certs/tls.crt"
+#       caCertificates: "/etc/istio/tls-ca-certs/ca.crt"
+#   - port:
+#       number: 8000
+#       protocol: HTTP
+#       name: internal
+#     defaultEndpoint: 0.0.0.0:8080

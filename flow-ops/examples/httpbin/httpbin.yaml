@@ -29,6 +29,9 @@ metadata:
     service: httpbin
 spec:
   ports:
+  - name: https
+    port: 8443
+    targetPort: 8080
   - name: http
     port: 8000
     targetPort: 8080
@@ -50,6 +53,9 @@ spec:
       labels:
         app: httpbin
         version: v1
+      annotations:
+        sidecar.istio.io/userVolume: '{"tls-secret":{"secret":{"secretName":"httpbin-mtls","optional":true}},"tls-ca-secret":{"secret":{"secretName":"httpbin-mtls-cacert"}}}'
+        sidecar.istio.io/userVolumeMount: '{"tls-secret":{"mountPath":"/etc/istio/tls-certs/","readOnly":true},"tls-ca-secret":{"mountPath":"/etc/istio/tls-ca-certs/","readOnly":true}}'
     spec:
       serviceAccountName: httpbin
       containers:

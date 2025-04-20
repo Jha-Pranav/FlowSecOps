@@ -22,10 +22,8 @@ spec:
         - "local.lab.httpbin"
         # - "*"   # optional: wildcard match
       tls:
-        mode: SIMPLE
+        mode: MUTUAL
         credentialName: httpbin-credential  # must match the name of the TLS secret
-
-
 ---
 
 apiVersion: networking.istio.io/v1
@@ -40,16 +38,16 @@ spec:
   - httpbin-gateway
   http:
   - match:
-    - uri:
-        prefix: /status
-    - uri:
-        prefix: /delay
+    # - uri:
+    #     prefix: /status
+    # - uri:
+    #     prefix: /delay
     - uri:
         prefix: "/"
     route:
     - destination:
         port:
-          number: 8000
+          number: 8443
         host: httpbin
 
 
