@@ -128,3 +128,11 @@ echo "[5/5] ✅ Cluster setup complete!"
 
 # Optionally, get all nodes
 multipass exec control-plane -- kubectl get nodes
+
+# Transfer Kube Config file to local machine.
+multipass transfer control-plane:/home/ubuntu/.kube/config config && cat config > ~/.kube/config && rm config
+chmod 600 ~/.kube/config
+chown "$USER:$USER" ~/.kube/config
+export KUBECONFIG=~/.kube/config
+
+

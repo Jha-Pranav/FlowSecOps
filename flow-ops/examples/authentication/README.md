@@ -11,3 +11,5 @@ kubectl apply -f flow-ops/examples/authentication/curl.yaml -n bar
 kubectl create ns legacy
 kubectl apply -f flow-ops/examples/authentication/httpbin.yaml -n legacy
 kubectl apply -f flow-ops/examples/authentication/curl.yaml -n legacy
+
+
